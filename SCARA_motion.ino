@@ -49,9 +49,13 @@ void loop()
     String command = Serial.readStringUntil('\n'); 
     command.trim(); // Remove any extra whitespace
 
+    Serial.println(command);  // Double Check
+
     GCodeCommand gcode = parseCommand(command);
 
     unitConversion(gcode);
+
+    printGCode(gcode);
 
     if(validateGCode(gcode))
     {
@@ -99,13 +103,13 @@ void unitConversion(GCodeCommand gcode)
   {
     gcode.x *= (mm_per_in * X_steps_per_mm);
     gcode.y *= (mm_per_in * Y_steps_per_mm);
-    gcode.feedrate *= (mm_per_in * X_steps_per_mm);
+    gcode.feedrate *= ((mm_per_in * X_steps_per_mm) / 60);
   }
   else
   {
     gcode.x *= (X_steps_per_mm);
     gcode.y *= (Y_steps_per_mm);
-    gcode.feedrate *= (X_steps_per_mm);
+    gcode.feedrate *= ((X_steps_per_mm) / 60);
   }
 }
 
@@ -131,6 +135,14 @@ bool validateGCode(GCodeCommand gcode)
   {
     return true;
   }
+}
+
+
+void printGCode(GCodeCommand gcode)
+{
+  Serial.print("X: "); Serial.println(gcode.x);
+  Serial.print("Y: "); Serial.println(gcode.y);
+  Serial.print("Feedrate: "); Serial.println(gcode.feedrate);
 }
 
 
