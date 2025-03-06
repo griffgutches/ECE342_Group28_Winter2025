@@ -9,8 +9,8 @@
 #define MaxSpeed 1000
 #define defaultSpeed 150
 
-#define X_steps_per_mm 100 // needs to be changed
-#define Y_steps_per_mm 100 // needs to be changed
+#define X_steps_per_mm 10 // needs to be changed
+#define Y_steps_per_mm 10 // needs to be changed
 #define mm_per_in 25.4
 
 bool absoluteMode = false; // true: absolute positioning, false: relative positioning 
