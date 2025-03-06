@@ -11,7 +11,7 @@
 
 #define X_steps_per_mm 100 // needs to be changed
 #define Y_steps_per_mm 100 // needs to be changed
-#define mm_per_in 0.0394
+#define mm_per_in 25.4
 
 bool absoluteMode = false; // true: absolute positioning, false: relative positioning 
 bool inchMode = false;    // true: unit is inches, false: unit is mm
