@@ -97,7 +97,7 @@ GCodeCommand  parseCommand(String command)
 }
 
 
-void unitConversion(GCodeCommand gcode)
+void unitConversion(GCodeCommand &gcode)
 {
   if(inchMode)
   {
@@ -190,11 +190,6 @@ void processGCode(GCodeCommand gcode)
     
     absoluteMode = true; 
 
-    Xmotor.setSpeed(defaultSpeed);    
-    Ymotor.setSpeed(defaultSpeed);
-
-    Xmotor.moveTo(gcode.x);    // Move to location
-    Ymotor.moveTo(gcode.y);  
   } 
   else if (gcode.commandType == "G91") 
   {
@@ -202,11 +197,6 @@ void processGCode(GCodeCommand gcode)
         
     absoluteMode = false; 
 
-    Xmotor.setSpeed(defaultSpeed);    
-    Ymotor.setSpeed(defaultSpeed);
-
-    Xmotor.move(gcode.x);    // Move a distance
-    Ymotor.move(gcode.y);  
   } 
   else if (gcode.commandType == "G20") 
   {
