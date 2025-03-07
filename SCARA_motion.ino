@@ -72,7 +72,13 @@ void loop()
 GCodeCommand  parseCommand(String command)
 {
   GCodeCommand gcode;
-  gcode.commandType = command.substring(0, 2); // Extract command type (e.g., "G0", "G1")
+  gcode.commandType = command.substring(0, 3); // Extract command type (e.g., "G0", "G1")
+
+  // Check if the third character is a space
+  if (command.charAt(2) == ' ') 
+  {
+    gcode.commandType = command.substring(0, 2); // Drop the space and keep only the first two characters
+  }
 
   int xIndex = command.indexOf('X');
   int yIndex = command.indexOf('Y');
@@ -165,6 +171,12 @@ void processGCode(GCodeCommand gcode)
       Xmotor.move(gcode.x);    // Move a distance
       Ymotor.move(gcode.y); 
     } 
+
+    while(Xmotor.currentPosition() != Xmotor.targetPosition() && Ymotor.currentPosition() != Ymotor.targetPosition()  )
+    {
+      Xmotor.run();
+      Ymotor.run();
+    }
   } 
   else if (gcode.commandType == "G1") 
   {
@@ -183,6 +195,12 @@ void processGCode(GCodeCommand gcode)
       Xmotor.move(gcode.x);    // Move a distance
       Ymotor.move(gcode.y); 
     } 
+
+    while(Xmotor.currentPosition() != Xmotor.targetPosition() && Ymotor.currentPosition() != Ymotor.targetPosition()  )
+    {
+      Xmotor.run();
+      Ymotor.run();
+    }
   } 
   else if (gcode.commandType == "G90") 
   {
