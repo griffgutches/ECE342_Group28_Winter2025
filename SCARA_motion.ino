@@ -475,8 +475,8 @@ void drawZigZag(float c, float dir)
 
   int count = ceil(c); // convert input to an integer
 
-  Xmotor.setMaxSpeed(MaxSpeed);    // Set speed to max 
-  Ymotor.setMaxSpeed(MaxSpeed);
+  //Xmotor.setMaxSpeed(MaxSpeed);    // Set speed to max 
+  //Ymotor.setMaxSpeed(MaxSpeed);
   
   // as many zigzags as specified by the user
   for(int i = 0; i < count; i++)  
