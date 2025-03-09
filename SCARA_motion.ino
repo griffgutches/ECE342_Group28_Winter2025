@@ -303,7 +303,7 @@ void checkSpecialInput(GCodeCommand gcode)
   }
   else if(gcode.commandType == "C3")  // Cool Design 3  (Extended Zig-Zag Pattern)
   {
-    cool3();
+    cool3(gcode.feedrate);
   }
   else if(gcode.commandType == "C4")  // Cool Design 4 (3D Cross)
   {
@@ -563,8 +563,11 @@ void cool2()
   go();
 }
 
-void cool3()
+void cool3(float feedrate)
 {
+  Xmotor.setMaxSpeed(feedrate);    // Set speed to feedrate, (feedrate (mm/min) must be converted into steps per second. I need to know steps/mm for the conversion)
+  Ymotor.setMaxSpeed(feedrate);
+
   delay(5000);
 
   drawZigZag(5, 0);
