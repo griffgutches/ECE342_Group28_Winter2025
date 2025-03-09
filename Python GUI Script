@@ -1,0 +1,184 @@
+import sys
+from PyQt5.QtWidgets import (
+    QApplication, QMainWindow, QWidget, QVBoxLayout, QGroupBox, QFormLayout,
+    QLineEdit, QPushButton
+)
+from PyQt5.QtSerialPort import QSerialPort
+from PyQt5.QtCore import QIODevice
+
+
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("G-code Sender")
+
+        # Setup serial port (change "COM3" to your port)
+        self.serial = QSerialPort(self)
+        self.serial.setPortName("COM6")
+        self.serial.setBaudRate(115200)
+        if not self.serial.open(QIODevice.WriteOnly):
+            print("Failed to open serial port!")
+
+        self.initUI()
+
+    def initUI(self):
+        centralWidget = QWidget()
+        self.setCentralWidget(centralWidget)
+        mainLayout = QVBoxLayout()
+
+        # --- G0 - Rapid Positioning (X, Y only) ---
+        self.g0Group = QGroupBox("G0 - Rapid Positioning")
+        g0Layout = QFormLayout()
+        self.g0_x = QLineEdit()
+        self.g0_y = QLineEdit()
+        g0Layout.addRow("X:", self.g0_x)
+        g0Layout.addRow("Y:", self.g0_y)
+        g0SendButton = QPushButton("Send G0")
+        g0SendButton.clicked.connect(self.sendG0)
+        g0Layout.addRow(g0SendButton)
+        self.g0Group.setLayout(g0Layout)
+        mainLayout.addWidget(self.g0Group)
+
+        # --- G1 - Linear Interpolation (X, Y, F only) ---
+        self.g1Group = QGroupBox("G1 - Linear Interpolation")
+        g1Layout = QFormLayout()
+        self.g1_x = QLineEdit()
+        self.g1_y = QLineEdit()
+        self.g1_f = QLineEdit()
+        g1Layout.addRow("X:", self.g1_x)
+        g1Layout.addRow("Y:", self.g1_y)
+        g1Layout.addRow("F:", self.g1_f)
+        g1SendButton = QPushButton("Send G1")
+        g1SendButton.clicked.connect(self.sendG1)
+        g1Layout.addRow(g1SendButton)
+        self.g1Group.setLayout(g1Layout)
+        mainLayout.addWidget(self.g1Group)
+
+        # --- G90 - Absolute Positioning ---
+        self.g90Group = QGroupBox("G90 - Absolute Positioning")
+        g90Layout = QVBoxLayout()
+        g90SendButton = QPushButton("Send G90")
+        g90SendButton.clicked.connect(self.sendG90)
+        g90Layout.addWidget(g90SendButton)
+        self.g90Group.setLayout(g90Layout)
+        mainLayout.addWidget(self.g90Group)
+
+        # --- G91 - Relative Positioning ---
+        self.g91Group = QGroupBox("G91 - Relative Positioning")
+        g91Layout = QVBoxLayout()
+        g91SendButton = QPushButton("Send G91")
+        g91SendButton.clicked.connect(self.sendG91)
+        g91Layout.addWidget(g91SendButton)
+        self.g91Group.setLayout(g91Layout)
+        mainLayout.addWidget(self.g91Group)
+
+        # --- G20 - Inch Mode ---
+        self.g20Group = QGroupBox("G20 - Inch Mode")
+        g20Layout = QVBoxLayout()
+        g20SendButton = QPushButton("Send G20")
+        g20SendButton.clicked.connect(self.sendG20)
+        g20Layout.addWidget(g20SendButton)
+        self.g20Group.setLayout(g20Layout)
+        mainLayout.addWidget(self.g20Group)
+
+        # --- G21 - Millimeter Mode ---
+        self.g21Group = QGroupBox("G21 - Millimeter Mode")
+        g21Layout = QVBoxLayout()
+        g21SendButton = QPushButton("Send G21")
+        g21SendButton.clicked.connect(self.sendG21)
+        g21Layout.addWidget(g21SendButton)
+        self.g21Group.setLayout(g21Layout)
+        mainLayout.addWidget(self.g21Group)
+
+        # --- M2 - End of Program ---
+        self.m2Group = QGroupBox("M2 - End of Program")
+        m2Layout = QVBoxLayout()
+        m2SendButton = QPushButton("Send M2")
+        m2SendButton.clicked.connect(self.sendM2)
+        m2Layout.addWidget(m2SendButton)
+        self.m2Group.setLayout(m2Layout)
+        mainLayout.addWidget(self.m2Group)
+
+        # --- M6 - Tool Change ---
+        self.m6Group = QGroupBox("M6 - Tool Change")
+        m6Layout = QFormLayout()
+        self.m6_tool = QLineEdit()
+        m6Layout.addRow("Tool Number:", self.m6_tool)
+        m6SendButton = QPushButton("Send M6")
+        m6SendButton.clicked.connect(self.sendM6)
+        m6Layout.addRow(m6SendButton)
+        self.m6Group.setLayout(m6Layout)
+        mainLayout.addWidget(self.m6Group)
+
+        # --- Custom G-code Input ---
+        self.customGroup = QGroupBox("Custom G-code Input")
+        customLayout = QFormLayout()
+        self.custom_command = QLineEdit()
+        customLayout.addRow("Command:", self.custom_command)
+        customSendButton = QPushButton("Send Custom G-code")
+        customSendButton.clicked.connect(self.sendCustomGcode)
+        customLayout.addRow(customSendButton)
+        self.customGroup.setLayout(customLayout)
+        mainLayout.addWidget(self.customGroup)
+
+        centralWidget.setLayout(mainLayout)
+
+    def sendCommand(self, command):
+        """Send the command over the serial port."""
+        if self.serial.isOpen():
+            self.serial.write((command + "\n").encode('utf-8'))
+            print("Sent:", command)
+        else:
+            print("Serial port not open!")
+
+    def sendG0(self):
+        command = "G0"
+        if self.g0_x.text():
+            command += " X" + self.g0_x.text()
+        if self.g0_y.text():
+            command += " Y" + self.g0_y.text()
+        self.sendCommand(command)
+
+    def sendG1(self):
+        command = "G1"
+        if self.g1_x.text():
+            command += " X" + self.g1_x.text()
+        if self.g1_y.text():
+            command += " Y" + self.g1_y.text()
+        if self.g1_f.text():
+            command += " F" + self.g1_f.text()
+        self.sendCommand(command)
+
+    def sendG90(self):
+        self.sendCommand("G90")
+
+    def sendG91(self):
+        self.sendCommand("G91")
+
+    def sendG20(self):
+        self.sendCommand("G20")
+
+    def sendG21(self):
+        self.sendCommand("G21")
+
+    def sendM2(self):
+        self.sendCommand("M2")
+
+    def sendM6(self):
+        command = "M6"
+        if self.m6_tool.text():
+            command += " T" + self.m6_tool.text()
+        self.sendCommand(command)
+
+    def sendCustomGcode(self):
+        """Send a custom G-code command entered by the user."""
+        command = self.custom_command.text().strip()
+        if command:
+            self.sendCommand(command)
+
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec_())
